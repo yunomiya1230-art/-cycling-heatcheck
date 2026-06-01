@@ -183,6 +183,8 @@ input[type=text]:focus,input[type=password]:focus{border-color:#999}
 
     <div id="ng-list"></div>
     <button class="btn-sec" onclick="exportNG()">📋 参加不可・未回答リストをコピー</button>
+    <button class="btn-sec" style="margin-top:8px;color:#a32d2d;border-color:#f09595" onclick="resetChecks()">🗑 本日のチェックデータをリセット</button>
+    
 
     <div class="admin-sec-title">名簿管理</div>
     <div class="card">
@@ -531,7 +533,15 @@ window.exportNG = function() {
       }).join('\n\n')
     : 'なし';
   if (missing.length) text += '\n\n【未回答】\n' + missing.map(r => `${r.name}（${r.sid}）`).join('\n');
-  navigator.clipboard?.writeText(text).then(() => showToast('コピーしました')).catch(() => prompt('コピーしてください', text));
+  navigator.clipboard?.writeText(text).then(() => showToast('コピーしました')).catch(() => prompt('コピーしてください', text));window.resetChecks = async function() {
+  if (!confirm('本日の体調チェックデータをすべて削除しますか？\n名簿は削除されません。')) return;
+  const snap = await getDocs(collection(db, 'checks'));
+  const deletes = snap.docs.map(d => deleteDoc(doc(db, 'checks', d.id)));
+  await Promise.all(deletes);
+  members = [];
+  renderAdmin();
+  showToast('リセットしました');
+};
 };
 </script>
 </body>
