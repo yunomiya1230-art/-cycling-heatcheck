@@ -115,7 +115,13 @@ input[type=text]:focus,input[type=password]:focus{border-color:#999}
       <p class="sec-sub">活動中・活動後にあてはまるものがあればチェック</p>
       <div class="check-grid" id="check-prev"></div>
     </div>
-
+<div class="card">
+  <p class="sec-title">今朝の体温</p>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+    <input type="text" id="in-temp" placeholder="例: 36.5" maxlength="4" style="width:100px" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+    <span style="font-size:14px;color:#888">℃</span>
+  </div>
+</div>
     <div class="card">
       <p class="sec-title">昨夜の睡眠時間</p>
       <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
@@ -251,6 +257,7 @@ const TODAY_NG = [
   {id:'noeat',    label:'朝食をとっていない'},
   {id:'history',  label:'熱中症になったことがある'},
 ];
+  const temp = document.getElementById('in-temp').value.trim();
 const TODAY_INFO = [
   {id:'noaccl', label:'最近1週間、暑い環境で30分以上の運動をしていない'},
 ];
@@ -425,6 +432,7 @@ window.submitCheck = async function() {
 
   const infoNotes = [];
   TODAY_INFO.forEach(c => { if (document.getElementById('chk-' + c.id).checked) infoNotes.push(c.label); });
+  if (temp) infoNotes.push(`体温 ${temp}℃`);
 
   const prevSymptoms = [];
   PREV_CHECKS.forEach(c => { if (document.getElementById('chk-' + c.id).checked) prevSymptoms.push(c.label); });
@@ -445,6 +453,7 @@ window.submitCheck = async function() {
       document.getElementById('chk-' + c.id).checked = false;
       document.getElementById('lbl-' + c.id).className = 'check-item';
     });
+    document.getElementById('in-temp').value = '';
     document.getElementById('in-sleep').value = 7; window.updSleep(7);
     document.getElementById('in-fatigue').value = 1; window.updR('fatigue', 1);
   } catch(e) {
